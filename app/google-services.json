@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "500768559326",
+    "project_id": "eventplanner-30291",
+    "storage_bucket": "eventplanner-30291.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:500768559326:android:99c4d0899b4d2cdb3d324f",
+        "android_client_info": {
+          "package_name": "com.tecsup.eventplanner_flores"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-7hIiWFcTqhy1D-d3f3pHKG62FYzXnj8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
