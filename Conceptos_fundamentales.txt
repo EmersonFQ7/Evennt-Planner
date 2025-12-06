@@ -1,0 +1,580 @@
+═══════════════════════════════════════════════════════════════
+           CONCEPTOS FUNDAMENTALES - EventPlanner
+═══════════════════════════════════════════════════════════════
+
+Este documento explica los conceptos clave utilizados en el desarrollo
+de la aplicación EventPlanner.
+
+───────────────────────────────────────────────────────────────────
+
+
+1. ¿QUÉ ES MVVM?
+═══════════════════════════════════════════════════════════════
+
+MVVM significa "Model-View-ViewModel" y es un patrón de arquitectura
+de software utilizado para separar la lógica de presentación de la
+lógica de negocio en aplicaciones.
+
+COMPONENTES DE MVVM:
+
+┌─────────────────────────────────────────────────────────────┐
+│                         VIEW (Vista)                         │
+│  • Pantallas que el usuario ve (UI)                         │
+│  • En EventPlanner: LoginScreen, EventListScreen, etc.      │
+│  • Construidas con Jetpack Compose                          │
+│  • Solo muestra datos, NO contiene lógica de negocio        │
+└──────────────┬──────────────────────────────────────────────┘
+               │
+               │ Observa cambios (StateFlow)
+               ↓
+┌─────────────────────────────────────────────────────────────┐
+│                    VIEWMODEL (Modelo de Vista)               │
+│  • Maneja la lógica de presentación                         │
+│  • En EventPlanner: LoginViewModel, EventListViewModel      │
+│  • Gestiona estados de la UI (loading, error, success)      │
+│  • NO conoce la Vista directamente                          │
+└──────────────┬──────────────────────────────────────────────┘
+               │
+               │ Solicita datos
+               ↓
+┌─────────────────────────────────────────────────────────────┐
+│                      MODEL (Modelo)                          │
+│  • Datos y lógica de negocio                                │
+│  • En EventPlanner: Event (data class)                      │
+│  • Repositories: AuthRepository, EventRepository            │
+│  • Interactúa con Firebase                                  │
+└─────────────────────────────────────────────────────────────┘
+
+VENTAJAS DE MVVM:
+
+✓ Separación de responsabilidades
+✓ Código más fácil de probar
+✓ Fácil mantenimiento
+✓ Reutilización de componentes
+✓ Desarrollo en equipo más organizado
+
+EJEMPLO EN EVENTPLANNER:
+
+LoginScreen (VIEW)
+    ↓ observa
+LoginViewModel (VIEWMODEL)
+    ↓ usa
+AuthRepository (MODEL)
+    ↓ interactúa con
+Firebase Authentication
+
+FLUJO DE DATOS:
+1. Usuario ingresa email/password en LoginScreen
+2. LoginScreen llama a loginViewModel.login()
+3. LoginViewModel valida datos y llama a authRepository.login()
+4. AuthRepository se comunica con Firebase
+5. Resultado vuelve a ViewModel
+6. ViewModel actualiza el estado (StateFlow)
+7. LoginScreen observa el cambio y actualiza la UI
+
+
+───────────────────────────────────────────────────────────────────
+
+
+2. ¿QUÉ ES FIREBASE AUTHENTICATION?
+═══════════════════════════════════════════════════════════════
+
+Firebase Authentication es un servicio de Google que proporciona
+autenticación backend como servicio. Permite autenticar usuarios
+de manera fácil y segura.
+
+CARACTERÍSTICAS:
+
+• Múltiples métodos de autenticación:
+  - Email y contraseña ✓ (usado en EventPlanner)
+  - Google, Facebook, Twitter
+  - Teléfono (SMS)
+  - Anónimo
+
+• Seguridad gestionada por Google
+• Integración sencilla
+• Gratuito para uso básico
+
+CÓMO FUNCIONA EN EVENTPLANNER:
+
+1. REGISTRO:
+   Usuario → Email + Password → Firebase Auth → Cuenta creada
+   
+2. LOGIN:
+   Usuario → Credenciales → Firebase Auth → Token de sesión
+   
+3. SESIÓN PERSISTENTE:
+   Firebase guarda la sesión automáticamente
+   
+4. LOGOUT:
+   Cierra sesión y elimina el token
+
+MÉTODOS USADOS:
+
+• createUserWithEmailAndPassword() - Registro
+• signInWithEmailAndPassword() - Login
+• signOut() - Logout
+• currentUser - Usuario actual
+
+SEGURIDAD:
+
+✓ Contraseñas encriptadas
+✓ Tokens JWT seguros
+✓ Protección contra ataques
+✓ Reglas de validación
+✓ Recuperación de contraseña
+
+CÓDIGO EJEMPLO:
+
+```kotlin
+// Registro
+auth.createUserWithEmailAndPassword(email, password)
+    .await()
+
+// Login
+auth.signInWithEmailAndPassword(email, password)
+    .await()
+
+// Usuario actual
+val user = auth.currentUser
+
+// Logout
+auth.signOut()
+```
+
+
+───────────────────────────────────────────────────────────────────
+
+
+3. ¿QUÉ ES FIRESTORE?
+═══════════════════════════════════════════════════════════════
+
+Cloud Firestore es una base de datos NoSQL en la nube, flexible y
+escalable, para desarrollo móvil, web y de servidor de Firebase
+y Google Cloud.
+
+CARACTERÍSTICAS PRINCIPALES:
+
+• Base de datos NoSQL (no relacional)
+• Sincronización en tiempo real
+• Funciona offline
+• Escalable automáticamente
+• Consultas potentes
+
+ESTRUCTURA DE DATOS:
+
+Firestore usa una estructura de documentos y colecciones:
+
+Base de datos
+    └── Colección "events"
+        ├── Documento "event1"
+        │   ├── userId: "abc123"
+        │   ├── title: "Reunión"
+        │   ├── date: "2024-12-25"
+        │   ├── description: "..."
+        │   └── timestamp: 1234567890
+        ├── Documento "event2"
+        │   └── ...
+        └── Documento "event3"
+            └── ...
+
+EN EVENTPLANNER:
+
+Colección: events
+Documentos: Cada evento es un documento
+Campos: userId, title, date, description, timestamp
+
+OPERACIONES CRUD:
+
+1. CREATE (Crear):
+   ```kotlin
+   eventsCollection.add(eventData).await()
+   ```
+
+2. READ (Leer):
+   ```kotlin
+   eventsCollection
+       .whereEqualTo("userId", userId)
+       .addSnapshotListener { snapshot, error ->
+           // Datos en tiempo real
+       }
+   ```
+
+3. UPDATE (Actualizar):
+   ```kotlin
+   eventsCollection
+       .document(eventId)
+       .update(updates)
+       .await()
+   ```
+
+4. DELETE (Eliminar):
+   ```kotlin
+   eventsCollection
+       .document(eventId)
+       .delete()
+       .await()
+   ```
+
+TIEMPO REAL:
+
+Firestore actualiza automáticamente cuando los datos cambian:
+- Usuario A crea un evento
+- Firestore notifica a todos los listeners
+- La app se actualiza sin recargar
+
+REGLAS DE SEGURIDAD:
+
+Controlan quién puede leer/escribir datos:
+
+```javascript
+match /events/{eventId} {
+  allow read: if request.auth.uid == resource.data.userId;
+  allow write: if request.auth.uid == request.resource.data.userId;
+}
+```
+
+VENTAJAS:
+
+✓ Sincronización automática
+✓ Offline primero
+✓ Consultas complejas
+✓ Escalabilidad
+✓ Integración con Firebase Auth
+
+
+───────────────────────────────────────────────────────────────────
+
+
+4. ¿QUÉ ES JETPACK COMPOSE?
+═══════════════════════════════════════════════════════════════
+
+Jetpack Compose es el moderno toolkit de interfaz de usuario (UI)
+declarativo de Android para crear interfaces nativas con menos
+código, herramientas potentes e intuitivas APIs de Kotlin.
+
+CARACTERÍSTICAS:
+
+• Declarativo (describes QUÉ, no CÓMO)
+• Menos código que XML
+• Intuitivo y fácil de usar
+• Totalmente en Kotlin
+• Preview en tiempo real
+
+PARADIGMA DECLARATIVO:
+
+ANTES (XML + Código Imperativo):
+```xml
+<!-- layout.xml -->
+<TextView android:id="@+id/textView" />
+```
+```kotlin
+// Activity
+textView.text = "Hola"
+textView.setTextColor(Color.BLUE)
+```
+
+AHORA (Compose Declarativo):
+```kotlin
+@Composable
+fun Greeting() {
+    Text(
+        text = "Hola",
+        color = Color.Blue
+    )
+}
+```
+
+COMPONENTES EN COMPOSE:
+
+• Composables: Funciones que definen UI
+  - Anotadas con @Composable
+  - Pueden componerse entre sí
+  
+• States: Gestión de estados reactivos
+  - remember, mutableStateOf
+  - StateFlow, collectAsState
+  
+• Modifiers: Personalización de componentes
+  - .fillMaxWidth()
+  - .padding()
+  - .background()
+
+EJEMPLO EN EVENTPLANNER:
+
+```kotlin
+@Composable
+fun LoginScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "EventPlanner",
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold
+        )
+        
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") }
+        )
+        
+        Button(onClick = { login() }) {
+            Text("Iniciar Sesión")
+        }
+    }
+}
+```
+
+COMPONENTES USADOS EN EVENTPLANNER:
+
+• Text - Texto
+• Button - Botones
+• OutlinedTextField - Campos de texto
+• Column / Row - Layouts verticales/horizontales
+• Card - Tarjetas
+• LazyColumn - Listas eficientes
+• Scaffold - Estructura de pantalla
+• TopAppBar - Barra superior
+• FloatingActionButton - Botón flotante
+• AlertDialog - Diálogos
+
+RECOMPOSICIÓN:
+
+Cuando cambia un estado, Compose recompone (redibuja) solo
+las partes necesarias de la UI:
+
+```kotlin
+var count by remember { mutableStateOf(0) }
+
+Button(onClick = { count++ }) {
+    Text("Clicks: $count")  // ← Solo esto se redibuja
+}
+```
+
+VENTAJAS DE COMPOSE:
+
+✓ Menos código (50% menos que XML)
+✓ Desarrollo más rápido
+✓ Menos errores
+✓ Preview instantáneo
+✓ Interoperabilidad con Views existentes
+✓ Material Design 3 integrado
+
+
+───────────────────────────────────────────────────────────────────
+
+
+5. ¿QUÉ ES UN CRUD?
+═══════════════════════════════════════════════════════════════
+
+CRUD es un acrónimo que representa las cuatro operaciones básicas
+de persistencia de datos en aplicaciones y bases de datos.
+
+C R U D
+│ │ │ └─ DELETE (Eliminar)
+│ │ └─── UPDATE (Actualizar)
+│ └───── READ (Leer)
+└─────── CREATE (Crear)
+
+OPERACIONES CRUD:
+
+┌──────────┬─────────────┬────────────────────────────────┐
+│ Operación│   HTTP      │         Descripción            │
+├──────────┼─────────────┼────────────────────────────────┤
+│ CREATE   │   POST      │ Crear nuevo registro           │
+│ READ     │   GET       │ Leer/Obtener datos             │
+│ UPDATE   │   PUT/PATCH │ Actualizar registro existente  │
+│ DELETE   │   DELETE    │ Eliminar registro              │
+└──────────┴─────────────┴────────────────────────────────┘
+
+EN EVENTPLANNER:
+
+1. CREATE - Crear Evento
+   ┌────────────────────────────────────────┐
+   │ CreateEventScreen                      │
+   │                                        │
+   │ Título: [Reunión de equipo        ]   │
+   │ Fecha:  [2024-12-25              ]   │
+   │ Desc:   [Presentación proyecto    ]   │
+   │                                        │
+   │         [Guardar Evento]              │
+   └────────────────────────────────────────┘
+   
+   Código:
+   ```kotlin
+   suspend fun createEvent(
+       title: String,
+       date: String,
+       description: String
+   ) {
+       eventsCollection.add(eventData).await()
+   }
+   ```
+
+2. READ - Leer Eventos
+   ┌────────────────────────────────────────┐
+   │ EventListScreen                        │
+   │                                        │
+   │ ┌────────────────────────────────────┐ │
+   │ │ Reunión de equipo                 │ │
+   │ │ Fecha: 2024-12-25                 │ │
+   │ │ [Editar] [Eliminar]               │ │
+   │ └────────────────────────────────────┘ │
+   │ ┌────────────────────────────────────┐ │
+   │ │ Conferencia                       │ │
+   │ │ Fecha: 2024-12-30                 │ │
+   │ │ [Editar] [Eliminar]               │ │
+   │ └────────────────────────────────────┘ │
+   └────────────────────────────────────────┘
+   
+   Código:
+   ```kotlin
+   fun getEventsRealTime(): Flow<List<Event>> {
+       return callbackFlow {
+           eventsCollection
+               .whereEqualTo("userId", userId)
+               .addSnapshotListener { snapshot, _ ->
+                   trySend(events)
+               }
+       }
+   }
+   ```
+
+3. UPDATE - Actualizar Evento
+   ┌────────────────────────────────────────┐
+   │ EditEventScreen                        │
+   │                                        │
+   │ Título: [Reunión ACTUALIZADA      ]   │
+   │ Fecha:  [2024-12-26              ]   │
+   │ Desc:   [Cambio de fecha          ]   │
+   │                                        │
+   │      [Actualizar Evento]              │
+   └────────────────────────────────────────┘
+   
+   Código:
+   ```kotlin
+   suspend fun updateEvent(
+       eventId: String,
+       title: String,
+       date: String,
+       description: String
+   ) {
+       eventsCollection
+           .document(eventId)
+           .update(updates)
+           .await()
+   }
+   ```
+
+4. DELETE - Eliminar Evento
+   ┌────────────────────────────────────────┐
+   │ ¿Eliminar "Reunión de equipo"?        │
+   │                                        │
+   │ Esta acción no se puede deshacer.     │
+   │                                        │
+   │    [Cancelar]  [Eliminar]             │
+   └────────────────────────────────────────┘
+   
+   Código:
+   ```kotlin
+   suspend fun deleteEvent(eventId: String) {
+       eventsCollection
+           .document(eventId)
+           .delete()
+           .await()
+   }
+   ```
+
+IMPORTANCIA DEL CRUD:
+
+• Base de toda aplicación con datos
+• Permite interacción completa con información
+• Estándar en desarrollo de software
+• Fácil de entender y mantener
+
+FLUJO COMPLETO EN EVENTPLANNER:
+
+Usuario → CreateEventScreen → CreateEventViewModel
+    → EventRepository.createEvent()
+        → Firestore.add()
+            → Documento creado
+                → Snapshot listener notifica
+                    → EventListScreen actualiza
+                        → Usuario ve nuevo evento
+
+VENTAJAS DE CRUD COMPLETO:
+
+✓ Control total de datos
+✓ Funcionalidad completa
+✓ Experiencia de usuario completa
+✓ Aplicación profesional
+
+
+───────────────────────────────────────────────────────────────────
+
+
+═══════════════════════════════════════════════════════════════
+                    INTEGRACIÓN EN EVENTPLANNER
+═══════════════════════════════════════════════════════════════
+
+CÓMO SE RELACIONAN TODOS LOS CONCEPTOS:
+
+┌─────────────────────────────────────────────────────────────┐
+│                    JETPACK COMPOSE (UI)                      │
+│  LoginScreen, EventListScreen, CreateEventScreen, etc.      │
+└──────────────┬──────────────────────────────────────────────┘
+               │
+               │ Patrón MVVM
+               ↓
+┌─────────────────────────────────────────────────────────────┐
+│                      VIEWMODELS                              │
+│  LoginViewModel, EventListViewModel, etc.                   │
+│  (Gestión de estados con StateFlow)                         │
+└──────────────┬──────────────────────────────────────────────┘
+               │
+               │ Repository Pattern
+               ↓
+┌─────────────────────────────────────────────────────────────┐
+│                    REPOSITORIES                              │
+│  AuthRepository → Firebase Authentication                   │
+│  EventRepository → Cloud Firestore (CRUD)                   │
+└──────────────┬──────────────────────────────────────────────┘
+               │
+               │ APIs
+               ↓
+┌─────────────────────────────────────────────────────────────┐
+│                    FIREBASE BACKEND                          │
+│  • Authentication (usuarios)                                │
+│  • Firestore (base de datos)                               │
+│  • Sincronización en tiempo real                           │
+└─────────────────────────────────────────────────────────────┘
+
+
+EJEMPLO DE FLUJO COMPLETO - CREAR EVENTO:
+
+1. Usuario llena formulario en CreateEventScreen (COMPOSE)
+2. Presiona "Guardar"
+3. CreateEventScreen llama a viewModel.createEvent() (MVVM)
+4. CreateEventViewModel valida datos
+5. Llama a eventRepository.createEvent() (REPOSITORY)
+6. EventRepository usa FIRESTORE para hacer CREATE (CRUD)
+7. Firestore guarda el documento
+8. Snapshot listener detecta cambio (TIEMPO REAL)
+9. EventListViewModel recibe actualización
+10. EventListScreen se recompone (COMPOSE)
+11. Usuario ve el nuevo evento en la lista
+
+═══════════════════════════════════════════════════════════════
+
+Este proyecto integra todos estos conceptos modernos para crear
+una aplicación Android profesional, escalable y mantenible.
+
+═══════════════════════════════════════════════════════════════
+Fecha: Diciembre 2025
+Proyecto: EventPlanner - TECSUP
+═══════════════════════════════════════════════════════════════

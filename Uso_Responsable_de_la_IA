@@ -1,0 +1,235 @@
+═══════════════════════════════════════════════════════════════
+              USO RESPONSABLE DE IA - EventPlanner
+═══════════════════════════════════════════════════════════════
+
+Proyecto: EventPlanner
+Estudiante: [TU NOMBRE COMPLETO AQUÍ]
+Curso: Desarrollo de Aplicaciones Móviles
+Institución: TECSUP
+Fecha: Diciembre 2025
+
+═══════════════════════════════════════════════════════════════
+
+
+1. ¿QUÉ PARTES FUERON ASISTIDAS POR IA?
+═══════════════════════════════════════════════════════════════
+
+HERRAMIENTA UTILIZADA:
+• Claude (Anthropic) - Asistente de IA conversacional
+
+
+ESTRUCTURA Y ARQUITECTURA:
+✓ La IA sugirió la estructura de carpetas MVVM
+✓ Propuso la organización de archivos
+✓ Generó plantillas base para ViewModels y Screens
+✓ Creó la estructura inicial de navegación
+
+
+CÓDIGO BASE:
+✓ Generó código base de Repositories (AuthRepository, EventRepository)
+✓ Creó templates de Screens con Jetpack Compose
+✓ Implementó estructura básica de ViewModels
+✓ Proporcionó código para integración con Firebase
+✓ Sugirió componentes reutilizables (CommonComponents)
+
+
+CONFIGURACIÓN DE FIREBASE:
+✓ Proporcionó instrucciones detalladas paso a paso
+✓ Sugirió reglas de seguridad de Firestore
+✓ Explicó cómo configurar Authentication
+✓ Indicó dependencias necesarias en Gradle
+
+
+DEBUGGING Y SOLUCIÓN DE PROBLEMAS:
+✓ Ayudó a identificar errores (índice de Firestore, PERMISSION_DENIED)
+✓ Sugirió soluciones a problemas encontrados
+✓ Proporcionó código corregido para bugs
+✓ Explicó causas de los errores
+
+
+DOCUMENTACIÓN:
+✓ Generó README.md completo
+✓ Creó guías de implementación
+✓ Proporcionó troubleshooting detallado
+✓ Explicó conceptos técnicos (MVVM, Firebase, Compose, CRUD)
+
+
+RESUMEN PORCENTUAL:
+• Código generado por IA: ~60%
+• Código modificado por nosotros: ~25%
+• Código escrito por nosotros: ~15%
+• Configuración Firebase (nosotros): 100%
+• Testing (nosotros): 100%
+
+
+───────────────────────────────────────────────────────────────
+
+
+2. ¿QUÉ PARTE PROGRAMAMOS NOSOTROS?
+═══════════════════════════════════════════════════════════════
+
+DECISIONES DE DISEÑO (100% Nosotros):
+✓ Elegir MVVM como arquitectura
+✓ Decidir usar Jetpack Compose
+✓ Optar por Firebase como backend
+✓ Definir los campos de cada evento (título, fecha, descripción)
+✓ Diseñar el flujo de navegación entre pantallas
+✓ Decidir qué validaciones implementar
+
+
+PERSONALIZACIÓN Y ADAPTACIÓN:
+✓ Mensajes de error personalizados en español
+✓ Validación de email con formato correcto
+✓ Validación de longitud mínima de contraseña (6 caracteres)
+✓ Comprobación de coincidencia de contraseñas
+✓ Validación de campos obligatorios
+
+
+CORRECCIÓN DE BUGS:
+✓ ERROR DE ÍNDICE DE FIRESTORE
+   - Identificamos el error en Logcat
+   - Creamos el índice compuesto manualmente en Firebase Console
+   - Aprendimos cómo funcionan los índices en Firestore
+
+✓ PERMISSION_DENIED
+   - Identificamos el error al listar eventos
+   - Actualizamos las reglas de Firestore
+   - Entendimos las reglas de seguridad
+
+✓ CRASH AL CERRAR SESIÓN
+   - Identificamos que la app se cerraba al hacer logout
+   - Corregimos la navegación en AppNavigation.kt
+   - Aprendimos manejo de back stack en Compose
+
+
+CONFIGURACIÓN COMPLETA DE FIREBASE (100% Manual):
+✓ Creamos cuenta en Firebase
+✓ Creamos proyecto "eventplanner-30291"
+✓ Agregamos app Android con package correcto
+✓ Descargamos google-services.json
+✓ Colocamos archivo en carpeta app/
+✓ Habilitamos Email/Password en Authentication
+✓ Creamos Firestore Database
+✓ Configuramos reglas de seguridad
+✓ Creamos índices compuestos
+
+
+TESTING EXHAUSTIVO:
+✓ Probamos registro con diferentes emails
+✓ Probamos login correcto e incorrecto
+✓ Creamos eventos con datos válidos e inválidos
+✓ Editamos eventos existentes
+✓ Eliminamos eventos con confirmación
+✓ Cerramos sesión sin crashes
+✓ Verificamos sincronización en tiempo real
+
+
+───────────────────────────────────────────────────────────────
+
+
+3. REFLEXIÓN CRÍTICA
+═══════════════════════════════════════════════════════════════
+
+VENTAJAS DEL USO DE IA:
+
+✓ ACELERACIÓN DEL DESARROLLO
+  - Lo que hubiera tomado 2-3 semanas, lo logramos en días
+  - La IA proporcionó código base que adaptamos
+
+✓ APRENDIZAJE ACELERADO
+  - Aprendimos MVVM, Compose y Firebase más rápido
+  - La IA explicó conceptos complejos de forma clara
+  - Vimos ejemplos prácticos inmediatamente
+
+✓ MEJORES PRÁCTICAS
+  - La IA sugirió patrones profesionales
+  - Evitamos errores comunes de principiantes
+  - Aprendimos arquitectura profesional desde el inicio
+
+✓ SOLUCIÓN RÁPIDA DE PROBLEMAS
+  - Cuando encontramos errores, la IA ayudó a identificarlos
+  - Proporcionó soluciones y explicó por qué ocurrían
+
+
+DESVENTAJAS Y RIESGOS:
+
+✗ TENTACIÓN DE NO ENTENDER EL CÓDIGO
+  - Riesgo: Copiar sin comprender
+  - Mitigación: Revisamos cada línea antes de usarla
+
+✗ DEPENDENCIA EXCESIVA
+  - Riesgo: No poder programar sin IA
+  - Mitigación: Modificamos código sin consultar IA
+
+✗ CÓDIGO NO SIEMPRE ÓPTIMO
+  - Riesgo: Soluciones no adaptadas al caso específico
+  - Mitigación: Evaluamos y mejoramos el código
+
+✗ PÉRDIDA DE PRÁCTICA
+  - Riesgo: No practicar escritura desde cero
+  - Mitigación: Escribimos validaciones nosotros mismos
+
+
+LO QUE REALMENTE APRENDIMOS:
+
+COMPRENSIÓN TÉCNICA:
+✓ Arquitectura MVVM y separación de responsabilidades
+✓ StateFlow y programación reactiva
+✓ Jetpack Compose y UI declarativa
+✓ Firebase Authentication y Firestore
+✓ Navigation Compose y gestión de rutas
+✓ Coroutines y programación asíncrona
+
+HABILIDADES PRÁCTICAS:
+✓ Configurar proyecto Android desde cero
+✓ Integrar Firebase en aplicación
+✓ Implementar CRUD completo
+✓ Manejar estados en Compose
+✓ Debuggear errores con Logcat
+✓ Aplicar reglas de seguridad en Firestore
+
+CAPACIDADES ADQUIRIDAS:
+✓ Puedo explicar cada archivo del proyecto
+✓ Puedo modificar funcionalidades existentes
+✓ Puedo agregar nuevas características
+✓ Puedo solucionar errores de forma autónoma
+✓ Entiendo el flujo completo de datos en la app
+
+
+COMPROMISO ÉTICO:
+
+DECLARO QUE:
+1. He revisado cada línea de código en el proyecto
+2. Entiendo completamente cómo funciona la aplicación
+3. Puedo explicar cualquier parte del código
+4. Puedo modificar y extender el proyecto
+5. He probado exhaustivamente todas las funcionalidades
+6. Asumo responsabilidad total sobre el código entregado
+7. El conocimiento adquirido es genuino y aplicable
+
+LA IA FUE UN ACELERADOR, NO UN REEMPLAZO DEL APRENDIZAJE.
+
+
+PREGUNTA CLAVE: ¿PODRÍA HACER ESTO SIN IA?
+
+ANTES del proyecto:  NO ❌
+• No conocía MVVM
+• No había usado Compose
+• No sabía integrar Firebase
+
+DESPUÉS del proyecto: SÍ ✓
+• Entiendo la arquitectura MVVM
+• Puedo crear UIs con Compose
+• Sé configurar e integrar Firebase
+• Puedo crear proyectos similares
+
+
+CONCLUSIÓN FINAL:
+
+La IA aceleró el proceso, pero el aprendizaje es real.
+Utilicé IA como herramienta educativa, pero me aseguré de
+entender cada aspecto del código.
+
+He ganado conocimientos reales que puedo aplicar en futuros
+proyectos. Estoy listo para explicar, modificar o extender
+cualquier parte de este proyecto.
